@@ -2,6 +2,13 @@
 
 This repository is a basic Schematic implementation that serves as a starting point to create and publish Schematics to npm. Read [Use Angular Schematics to Simplify Your Life](https://developer.okta.com/blog/2019/02/13/angular-schematics) to see how this example was created.
 
+**Prerequisites:** [Node.js 10](https://nodejs.org).
+
+* [Getting Started](#getting-started)
+* [Links](#links)
+* [Help](#help)
+* [License](#license)
+
 ## Getting Started
 
 Clone this application to your local hard drive using Git.
