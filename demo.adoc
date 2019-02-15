@@ -103,13 +103,13 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
     }
   }
 
+. Install `@schematics/angular` to allow getting a workspace and project in your schematic
+
+  npm i -D @schematics/angular@7.3.0
+
 . Modify `index.ts` to get the generated project's path, and copy templates [`schematics-setup`, `schematics-move`]
 
 ==== Test it!
-
-. Install `@schematics/angular` to create a workspace and project in your test
-
-  npm i -D @schematics/angular@7.3.0
 
 . Update `index_spec.ts` to create a workspace, project, and pass in options [`schematics-test`]
 
