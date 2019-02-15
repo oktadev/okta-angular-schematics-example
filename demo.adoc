@@ -55,7 +55,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
 . Create an `app.component.ts` file in `src/my-component/files/src/app` [`schematics-app-ts`]
 
   import { Component } from '@angular/core';
-
+  
   @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
@@ -72,7 +72,7 @@ The brackets at the end of each step indicate the alias's or IntelliJ Live Templ
      Hello, {{ name }}
     </h1>
   </div>
-
+  
   <router-outlet></router-outlet>
 
 . Create a `src/my-component/schema.json` file to define a `name` prompt [`schematics-schema`]
