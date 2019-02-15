@@ -1,0 +1,160 @@
+:experimental:
+// Define unicode for Apple Command key.
+:commandkey: &#8984;
+
+== Use Angular Schematics to Simplify Your Life
+
+The brackets at the end of each step indicate the alias's or IntelliJ Live Templates to use. You can find the template definitions at https://github.com/mraible/idea-live-templates[mraible/idea-live-templates].
+
+=== See Schematics in Action
+
+. Install Angular CLI: `npm install -g @angular/cli`
+. Create a new Angular project: `ng new my-cool-app --routing`
+. Add Okta for authentication: `ng add @oktadev/schematics`
+
+=== Create Your First Schematic
+
+. Install the Schematics CLI
+
+  npm i -g @angular-devkit/schematics-cli@0.13.1
+
+. Run `schematics` to create a new blank project
+
+  schematics blank --name=my-component
+
+. Show `collection.json`, `index.ts`, and `index_spec.ts`
+
+. Run `npm test`
+
+=== Add a Hello World Example
+
+. Modify `index.ts` to create a `hello.ts` file
+
+  tree.create('hello.ts', 'console.log("Hello, World")');
+
+. Update `index_spec.ts` to verify this file is created
+
+  expect(tree.files).toEqual(['/hello.ts']);
+
+. Run `npm test` to verify test passes
+
+. Run your schematic
+
+  schematics .:my-component
+
+. Turn off debug mode and run it
+
+  schematics .:my-component --dry-run=false
+
+=== Copy and Manipulate Templates in Your Schematic
+
+. Create a directory to hold your templates
+
+  mkdir -p src/my-component/files/src/app
+
+. Create an `app.component.ts` file in `src/my-component/files/src/app` [`schematics-app-ts`]
+
+  import { Component } from '@angular/core';
+
+  @Component({
+    selector: 'app-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.css']
+  })
+  export class AppComponent {
+    name = '<%= name %>';
+  }
+
+. Create an `app.component.html` file to read the `name` variable [`schematics-app-html`]
+
+  <div style="text-align:center">
+    <h1>
+     Hello, {{ name }}
+    </h1>
+  </div>
+
+  <router-outlet></router-outlet>
+
+. Create a `src/my-component/schema.json` file to define a `name` prompt [`schematics-schema`]
+
+  {
+    "$schema": "http://json-schema.org/schema",
+    "id": "SchematicsMyComponent",
+    "title": "My Component Schema",
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "description": "Your Name",
+        "x-prompt": "What is your name?"
+      }
+    },
+    "required": ["name"]
+  }
+
+. Update `src/collection.json` to reference this file in a `schema` property
+
+  {
+    "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
+    "schematics": {
+      "my-component": {
+        "description": "A blank schematic.",
+        "factory": "./my-component/index#myComponent",
+        "schema": "./my-component/schema.json"
+      }
+    }
+  }
+
+. Modify `index.ts` to get the generated project's path, and copy templates [`schematics-setup`, `schematics-move`]
+
+==== Test it!
+
+. Install `@schematics/angular` to create a workspace and project in your test
+
+  npm i -D @schematics/angular@7.3.0
+
+. Update `index_spec.ts` to create a workspace, project, and pass in options [`schematics-test`]
+
+. Run `npm test` and rejoice in your victory!
+
+. Run your schematics with Angular CLI
+
+  ng new my-test-app --routing --style css
+  cd my-test-app
+  npm link ../my-component
+
+. Run your schematic with the `ng g` command
+
+  ng g my-component:my-component
+
+. Fix `already exists` error [`schematics-move-fix`]
+
+. Run `npm run build` and try again
+
+=== Publish Your Schematics to npm
+
+. **Modify `.npmignore` so it doesn’t exclude your template files.**
+
+. Publish using `npm publish`
+
+. You can use `npm unpublish` if you make a mistake (within the first 72 hours)
+
+=== Add Support for `ng add` with Angular CLI
+
+. Add `ng-add` to `collection.json` [`schematics-ng-add`]
+
+  "ng-add": {
+    "factory": "./ng-add/index",
+    "description": "Add schematic",
+    "schema": "./my-component/schema.json"
+  }
+
+. Create `src/ng-add/index.ts` to invoke the `my-component` schematic [`schematics-ng-add-index`]
+
+. Run `npm run build`
+
+. Use `ng add my-component` in `my-test-app`
+
+. Fini!
+
+Source: https://developer.okta.com/blog/2019/02/13/angular-schematics[Use Angular Schematics to Simplify Your Life]
