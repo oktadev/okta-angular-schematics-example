@@ -1,44 +1,43 @@
 import {
-  apply, FileEntry, forEach,
+  apply,
+  chain,
   MergeStrategy,
   mergeWith,
   move,
   Rule,
   SchematicContext,
+  SchematicsException,
   template,
   Tree,
   url
 } from '@angular-devkit/schematics';
 import { join, normalize } from 'path';
-import { getWorkspace } from '@schematics/angular/utility/config';
+import { getWorkspace } from '@schematics/angular/utility/workspace';
 
-export function setupOptions(host: Tree, options: any): Tree {
-  const workspace = getWorkspace(host);
+export async function setupOptions(host: Tree, options: any): Promise<Tree> {
+  const workspace = await getWorkspace(host);
   if (!options.project) {
-    options.project = Object.keys(workspace.projects)[0];
+    options.project = workspace.projects.keys().next().value;
   }
-  const project = workspace.projects[options.project];
+  const project = workspace.projects.get(options.project);
+  if (!project) {
+    throw new SchematicsException(`Invalid project name: ${options.project}`);
+  }
+
   options.path = join(normalize(project.root), 'src');
   return host;
 }
 
 export function myComponent(_options: any): Rule {
-  return (tree: Tree, _context: SchematicContext) => {
-    setupOptions(tree, _options);
+  return async (tree: Tree, _context: SchematicContext) => {
+    await setupOptions(tree, _options);
 
     const movePath = normalize(_options.path + '/');
     const templateSource = apply(url('./files/src'), [
       template({..._options}),
-      move(movePath),
-      // fix for https://github.com/angular/angular-cli/issues/11337
-      forEach((fileEntry: FileEntry) => {
-        if (tree.exists(fileEntry.path)) {
-          tree.overwrite(fileEntry.path, fileEntry.content);
-        }
-        return fileEntry;
-      }),
+      move(movePath)
     ]);
-    const rule = mergeWith(templateSource, MergeStrategy.Overwrite);
-    return rule(tree, _context);
+
+    return chain([mergeWith(templateSource, MergeStrategy.Overwrite)]);
   };
 }
